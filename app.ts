@@ -1,10 +1,12 @@
 import express, { NextFunction, Request, Response, Express } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 import Logging from "./src/utils/logging";
 import { MessageResponse } from "./src/utils/enum";
 import { EmailRouter } from "./src/email/router";
+import { AuthRouter } from "./src/auth/router";
 
 const app: Express = express();
 
@@ -35,14 +37,14 @@ const StartServer = () => {
   // Cors
   app.use(
     cors({
-      origin: "https://fyndahmailer.vercel.app",
+      origin:  ["https://fyndahmailer.vercel.app", "https://fyndahmailerauth.vercel.app"],
       credentials: true,
       methods: ["POST"],
     })
   );
 
   // Routes
-  app.use("/api/v1", EmailRouter);
+  app.use("/api/v1", EmailRouter, AuthRouter);
 
   // Health check
   app.get("/api/v1/healthcheck", (_req: Request, res: Response) => {
@@ -76,4 +78,19 @@ const StartServer = () => {
   );
 };
 
-StartServer();
+const MONGODB_URI = process.env.MONGODB_URI || "";
+
+mongoose
+  .connect(MONGODB_URI)
+  .then(() => {
+    Logging.info(`Database connected 🎂`);
+
+    StartServer();
+  })
+  .catch((_error) => {
+    Logging.error("Error while connecting to Database ===> ");
+
+    Logging.error(_error);
+
+    process.exit(1);
+  });

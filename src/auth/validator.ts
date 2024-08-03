@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import { MessageResponse } from "../utils/enum";
 
 class AuthValidator {
-  public async log_in(req: Request, res: Response, next: NextFunction) {
+  public async auth(req: Request, res: Response, next: NextFunction) {
     const schema = Joi.object({
       userName: Joi.string().required().messages({
         "string.base": "Username must be text",
