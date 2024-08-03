@@ -5,5 +5,7 @@ const express_1 = require("express");
 const controller_1 = require("./controller");
 const utils_1 = require("../utils");
 const validator_1 = require("./validator");
+const is_auth_1 = require("../middleware/is_auth");
 exports.EmailRouter = (0, express_1.Router)();
 exports.EmailRouter.post("/send-email", [validator_1.sendEmailValidator.sendEmail], (0, utils_1.wrapAsync)(controller_1.emailController.sendEmail));
+exports.EmailRouter.post("/send/auth/email", [is_auth_1.isAuth, validator_1.sendEmailValidator.sendEmail], (0, utils_1.wrapAsync)(controller_1.emailController.sendAuthEmail));

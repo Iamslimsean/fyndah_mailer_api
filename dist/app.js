@@ -6,9 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const logging_1 = __importDefault(require("./src/utils/logging"));
 const enum_1 = require("./src/utils/enum");
 const router_1 = require("./src/email/router");
+const router_2 = require("./src/auth/router");
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 const port = process.env.PORT || 8080;
@@ -25,12 +27,12 @@ const StartServer = () => {
     app.use(express_1.default.urlencoded({ extended: true }));
     // Cors
     app.use((0, cors_1.default)({
-        origin: "https://fyndahmailer.vercel.app",
+        origin: ["https://fyndahmailer.vercel.app", "https://fyndahmailerauth.vercel.app"],
         credentials: true,
         methods: ["POST"],
     }));
     // Routes
-    app.use("/api/v1", router_1.EmailRouter);
+    app.use("/api/v1", router_1.EmailRouter, router_2.AuthRouter);
     // Health check
     app.get("/api/v1/healthcheck", (_req, res) => {
         res.status(200).json({ status: "UP 🔥🔧🎂" });
@@ -54,4 +56,15 @@ const StartServer = () => {
     });
     app.listen(port, () => logging_1.default.info(`Server is running on port ${port} 🔥🔧`));
 };
-StartServer();
+const MONGODB_URI = process.env.MONGODB_URI || "";
+mongoose_1.default
+    .connect(MONGODB_URI)
+    .then(() => {
+    logging_1.default.info(`Database connected 🎂`);
+    StartServer();
+})
+    .catch((_error) => {
+    logging_1.default.error("Error while connecting to Database ===> ");
+    logging_1.default.error(_error);
+    process.exit(1);
+});
