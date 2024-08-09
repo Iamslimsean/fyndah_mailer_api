@@ -37,7 +37,7 @@ const StartServer = () => {
   // Cors
   app.use(
     cors({
-      origin: "*",
+      origin: ["https://fyndahmailerauth.vercel.app"],
       // ["https://fyndahmailer.vercel.app", "https://fyndahmailerauth.vercel.app"],
       credentials: true,
       methods: ["POST"],
