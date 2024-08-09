@@ -12,12 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.emailController = void 0;
 const enum_1 = require("../utils/enum");
 const email_1 = require("../utils/email");
-const service_1 = require("../admin/service");
+const service_1 = require("../user/service");
 class EmailController {
     sendEmail(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email } = req.body;
-            yield (0, email_1.sendSingleEmail)(req);
+            //await sendSingleEmail(req);
             return res.status(200).json({
                 message: enum_1.MessageResponse.Success,
                 description: `Email sent to ==> ${email}`,
@@ -29,7 +29,7 @@ class EmailController {
         return __awaiter(this, void 0, void 0, function* () {
             const { user_id } = req;
             const { email } = req.body;
-            let user = yield service_1.adminService.findUserById(user_id);
+            let user = yield service_1.userService.findUserById(user_id);
             if (!user) {
                 return res.status(404).json({
                     message: enum_1.MessageResponse.Error,
@@ -39,7 +39,7 @@ class EmailController {
             }
             const currentDate = new Date();
             const lastEmailSentDate = new Date(user.lastEmailSentDate);
-            console.log(currentDate, lastEmailSentDate);
+            // console.log(currentDate, lastEmailSentDate);
             if (lastEmailSentDate < currentDate) {
                 user.totalNumberOfEmailSentToday += 1;
             }
@@ -48,8 +48,21 @@ class EmailController {
                 user.totalNumberOfEmailSentToday = 0;
             }
             yield user.save();
-            if (lastEmailSentDate < currentDate && user.totalNumberOfEmailSentToday < 5000) {
-                yield (0, email_1.sendSingleEmail)(req);
+            if (lastEmailSentDate < currentDate &&
+                user.totalNumberOfEmailSentToday < 5000) {
+                if (user.site_id === enum_1.SitesId.FyndahMailer) {
+                    yield (0, email_1.sendEmailForFyndah)(req);
+                }
+                else if (user.site_id === enum_1.SitesId.FyndahMailerNewsletter) {
+                    yield (0, email_1.sendEmailForFyndahNewsLetter)(req);
+                }
+                else {
+                    return res.status(400).json({
+                        message: enum_1.MessageResponse.Error,
+                        description: `Invalid website`,
+                        data: null,
+                    });
+                }
                 return res.status(200).json({
                     message: enum_1.MessageResponse.Success,
                     description: `Email sent to ==> ${email}`,

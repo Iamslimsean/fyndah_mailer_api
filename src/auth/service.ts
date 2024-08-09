@@ -1,20 +1,21 @@
 import { Request } from "express";
 
-import Admin from "../admin/enity";
+import User from "../user/entity";
 
 class AuthService {
-  public async createAdmin(req: Request) {
-    const { userName, password } = req.body;
+  public async createUser(req: Request) {
+    const { userName, password, site_id } = req.body;
 
 
-    const admin = new Admin({
+    const user = new User({
       userName,
-      password
+      password,
+      site_id
     });
 
-    const adminData = await admin.save();
+    const userData = await user.save();
 
-    return adminData;
+    return userData;
   }
 
 }

@@ -23,6 +23,10 @@ class AuthValidator {
                     "string.base": "Username must be text",
                     "any.required": "Username is required.",
                 }),
+                site_id: joi_1.default.string().required().messages({
+                    "string.base": "Sitename must be text",
+                    "any.required": "Sitename is required.",
+                }),
                 password: joi_1.default.string().required().messages({
                     "any.required": "Password is required.",
                 }),

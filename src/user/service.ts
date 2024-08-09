@@ -1,24 +1,25 @@
 import { Request } from "express";
 
-import Admin from "./enity";
+import User from "./entity";
 import { CustomRequest } from "../utils/interface";
 
-class AdminService {
-  public async findByUserName(req: Request) {
-    const { userName } = req.body;
+class UserService {
+  public async findByUserNameAndSiteName(req: Request) {
+    const { userName, site_id } = req.body;
 
-    const user = await Admin.findOne({
+    const user = await User.findOne({
       userName: userName,
+      site_id: site_id
     });
 
     return user;
   }
 
 
-  public async checkAdminPassword(req: Request) {
+  public async checkUserPassword(req: Request) {
     const { password } = req.body;
 
-    const user = await Admin.findOne({
+    const user = await User.findOne({
       password: password,
     });
 
@@ -26,7 +27,7 @@ class AdminService {
   }
 
   public async findUserById(user_id: string) {
-    const user = await Admin.findById(user_id);
+    const user = await User.findById(user_id);
 
     return user;
   }
@@ -34,7 +35,7 @@ class AdminService {
   public async addEmailSendingLimitByOne(req: Request) {
     const { userName } = req.body;
 
-    const user = await Admin.findOne({
+    const user = await User.findOne({
       userName: userName,
     });
 
@@ -42,4 +43,4 @@ class AdminService {
   }
 }
 
-export const adminService = new AdminService();
+export const userService = new UserService();

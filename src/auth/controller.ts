@@ -6,24 +6,24 @@ import dotenv from "dotenv";
 import { MessageResponse } from "../utils/enum";
 
 import { authService } from "./service";
-import { adminService } from "../admin/service";
+import { userService } from "../user/service";
 
 dotenv.config();
 
 class AuthController {
   public async admin_sign_up(req: Request, res: Response) {
-    const user = await authService.createAdmin(req);
+    const user = await authService.createUser(req);
 
     return res.status(201).json({
       message: MessageResponse.Success,
-      description: "Admin creation completed!",
+      description: "User creation completed!",
       data: null,
     });
   }
 
   public async sign_in(req: Request, res: Response) {
 
-    const user_exists = await adminService.findByUserName(req);
+    const user_exists = await userService.findByUserNameAndSiteName(req);
 
     if (!user_exists) {
       return res.status(400).json({
@@ -33,7 +33,7 @@ class AuthController {
       });
     }
 
-    const password_exists = await adminService.checkAdminPassword(req);
+    const password_exists = await userService.checkUserPassword(req);
 
     if (!password_exists) {
       return res.status(400).json({

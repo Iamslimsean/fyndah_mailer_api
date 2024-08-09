@@ -7,13 +7,13 @@ import { authValidator } from "./validator";
 export const AuthRouter = Router();
 
 AuthRouter.post(
-  "/admin/signin",
+  "/auth/signin",
   [authValidator.auth],
   wrapAsync(authController.sign_in)
 );
 
 AuthRouter.post(
-  "/admin/signup",
+  "/auth/signup",
   [authValidator.auth],
   wrapAsync(authController.admin_sign_up)
 );

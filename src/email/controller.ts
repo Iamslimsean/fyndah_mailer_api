@@ -1,15 +1,18 @@
 import { Request, Response } from "express";
 
-import { MessageResponse } from "../utils/enum";
-import { sendSingleEmail } from "../utils/email";
+import { MessageResponse, SitesId } from "../utils/enum";
+import {
+  sendEmailForFyndah,
+  sendEmailForFyndahNewsLetter,
+} from "../utils/email";
 import { CustomRequest } from "../utils/interface";
-import { adminService } from "../admin/service";
+import { userService } from "../user/service";
 
 class EmailController {
   public async sendEmail(req: Request, res: Response) {
     const { email } = req.body;
 
-    await sendSingleEmail(req);
+    //await sendSingleEmail(req);
 
     return res.status(200).json({
       message: MessageResponse.Success,
@@ -22,7 +25,7 @@ class EmailController {
     const { user_id } = req as CustomRequest;
     const { email } = req.body;
 
-    let user = await adminService.findUserById(user_id);
+    let user = await userService.findUserById(user_id);
 
     if (!user) {
       return res.status(404).json({
@@ -34,7 +37,7 @@ class EmailController {
 
     const currentDate = new Date();
     const lastEmailSentDate = new Date(user.lastEmailSentDate);
-    console.log(currentDate, lastEmailSentDate)
+    // console.log(currentDate, lastEmailSentDate);
 
     if (lastEmailSentDate < currentDate) {
       user.totalNumberOfEmailSentToday += 1;
@@ -43,12 +46,23 @@ class EmailController {
       user.totalNumberOfEmailSentToday = 0;
     }
 
-   
     await user.save();
 
-    if (lastEmailSentDate < currentDate && user.totalNumberOfEmailSentToday < 5000) {
-      await sendSingleEmail(req);
-      
+    if (
+      lastEmailSentDate < currentDate &&
+      user.totalNumberOfEmailSentToday < 5000
+    ) {
+      if (user.site_id === SitesId.FyndahMailer) {
+        await sendEmailForFyndah(req);
+      } else if (user.site_id === SitesId.FyndahMailerNewsletter) {
+        await sendEmailForFyndahNewsLetter(req);
+      } else {
+        return res.status(400).json({
+          message: MessageResponse.Error,
+          description: `Invalid website`,
+          data: null,
+        });
+      }
 
       return res.status(200).json({
         message: MessageResponse.Success,
@@ -56,7 +70,6 @@ class EmailController {
         data: null,
       });
     }
-
 
     return res.status(400).json({
       message: MessageResponse.Error,

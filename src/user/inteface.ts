@@ -1,9 +1,10 @@
 import { Document } from "mongoose";
 
 
-export interface IAdmin extends Document {
+export interface IUser extends Document {
   userName: string;
   password: string;
+  site_id: string;
   totalNumberOfEmailSentToday: number;
   lastEmailSentDate: Date;
 }

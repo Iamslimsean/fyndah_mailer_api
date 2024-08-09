@@ -1,10 +1,13 @@
-import mongoose, { Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-import { IAdmin } from "./inteface";
+import { IUser } from "./inteface";
 
-
-const adminSchema: Schema = new Schema({
+const userSchema: Schema = new Schema({
   userName: {
+    type: String,
+    required: true,
+  },
+ site_id: { 
     type: String,
     required: true,
   },
@@ -14,11 +17,11 @@ const adminSchema: Schema = new Schema({
   },
   totalNumberOfEmailSentToday: {
     type: Number,
-    default: 0
+    default: 0,
   },
   lastEmailSentDate: { type: Date, default: Date.now },
 });
 
-const User = mongoose.model<IAdmin>("Admin", adminSchema);
+const User = mongoose.model<IUser>("User", userSchema);
 
 export default User;

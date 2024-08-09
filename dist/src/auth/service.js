@@ -13,17 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authService = void 0;
-const enity_1 = __importDefault(require("../admin/enity"));
+const entity_1 = __importDefault(require("../user/entity"));
 class AuthService {
-    createAdmin(req) {
+    createUser(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { userName, password } = req.body;
-            const admin = new enity_1.default({
+            const { userName, password, site_id } = req.body;
+            const user = new entity_1.default({
                 userName,
-                password
+                password,
+                site_id
             });
-            const adminData = yield admin.save();
-            return adminData;
+            const userData = yield user.save();
+            return userData;
         });
     }
 }
