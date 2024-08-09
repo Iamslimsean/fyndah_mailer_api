@@ -40,7 +40,7 @@ const sendEmail = (input) => __awaiter(void 0, void 0, void 0, function* () {
         },
     });
     const mailOptions = {
-        from: `Fyndah <${process.env.FROM}>`,
+        from: `Afrilab <${process.env.FROM}>`,
         to: receiverEmail,
         subject,
         html: emailTemplate,

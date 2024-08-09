@@ -32,7 +32,7 @@ export const sendEmail = async (input: ISendEmail) => {
   });
 
   const mailOptions = {
-    from: `Fyndah <${process.env.FROM}>`,
+    from: `Afrilab <${process.env.FROM}>`,
     to: receiverEmail,
     subject,
     html: emailTemplate,
