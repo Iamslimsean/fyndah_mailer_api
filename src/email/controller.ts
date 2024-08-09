@@ -4,6 +4,7 @@ import { MessageResponse, SitesId } from "../utils/enum";
 import {
   sendEmailForFyndah,
   sendEmailForFyndahNewsLetter,
+  sendEmailForCrackMailer
 } from "../utils/email";
 import { CustomRequest } from "../utils/interface";
 import { userService } from "../user/service";
@@ -56,6 +57,8 @@ class EmailController {
         await sendEmailForFyndah(req);
       } else if (user.site_id === SitesId.FyndahMailerNewsletter) {
         await sendEmailForFyndahNewsLetter(req);
+      } else if (user.site_id === SitesId.CrackMailer) {
+        await sendEmailForCrackMailer(req);
       } else {
         return res.status(400).json({
           message: MessageResponse.Error,

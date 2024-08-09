@@ -10,4 +10,5 @@ var SitesId;
 (function (SitesId) {
     SitesId["FyndahMailer"] = "fyndah-mailer";
     SitesId["FyndahMailerNewsletter"] = "fyndah-mailer-newsletter";
+    SitesId["CrackMailer"] = "crack-mailer";
 })(SitesId || (exports.SitesId = SitesId = {}));

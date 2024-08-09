@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendEmailForFyndahNewsLetter = exports.sendEmailForFyndah = void 0;
+exports.sendEmailForCrackMailer = exports.sendEmailForFyndahNewsLetter = exports.sendEmailForFyndah = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 dotenv_1.default.config();
-const sendSingleEmailForFyndah = (input) => __awaiter(void 0, void 0, void 0, function* () {
-    const { receiverEmail, subject, emailTemplate, replyto } = input;
+const sendEmail = (input) => __awaiter(void 0, void 0, void 0, function* () {
+    const { receiverEmail, subject, emailTemplate, replyto, host, port, pass, user, from } = input;
     const TransportMailService = (transporter, mailOptions) => __awaiter(void 0, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
             transporter.sendMail(mailOptions, function (error, info) {
@@ -31,48 +31,16 @@ const sendSingleEmailForFyndah = (input) => __awaiter(void 0, void 0, void 0, fu
         });
     });
     const transporter = nodemailer_1.default.createTransport({
-        host: process.env.FYNDAH_MAILER_SMPT_HOST,
-        port: Number(process.env.FYNDAH_MAILER_SMPT_EMAIL_SSL_PORT),
+        host: host,
+        port: port,
         secure: true,
         auth: {
-            user: process.env.FYNDAH_MAILER_SMPT_USER,
-            pass: process.env.FYNDAH_MAILER_SMPT_PASSWORD,
+            user: user,
+            pass: pass,
         },
     });
     const mailOptions = {
-        from: `Promotion <${process.env.FYNDAH_MAILER_SMPT_FROM}>`,
-        to: receiverEmail,
-        subject,
-        html: emailTemplate,
-        replyTo: replyto
-    };
-    yield TransportMailService(transporter, mailOptions);
-});
-const sendSingleEmailForFyndahNewsletter = (input) => __awaiter(void 0, void 0, void 0, function* () {
-    const { receiverEmail, subject, emailTemplate, replyto } = input;
-    const TransportMailService = (transporter, mailOptions) => __awaiter(void 0, void 0, void 0, function* () {
-        return new Promise((resolve, reject) => {
-            transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    reject(false);
-                }
-                else {
-                    resolve(info.response);
-                }
-            });
-        });
-    });
-    const transporter = nodemailer_1.default.createTransport({
-        host: process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_HOST,
-        port: Number(process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_EMAIL_SSL_PORT),
-        secure: true,
-        auth: {
-            user: process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_USER,
-            pass: process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_PASSWORD,
-        },
-    });
-    const mailOptions = {
-        from: `New Promotion <${process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_FROM}>`,
+        from: `Promotion <${from}>`,
         to: receiverEmail,
         subject,
         html: emailTemplate,
@@ -82,24 +50,111 @@ const sendSingleEmailForFyndahNewsletter = (input) => __awaiter(void 0, void 0, 
 });
 const sendEmailForFyndah = (req) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, subject, html, replyto } = req.body;
-    return sendSingleEmailForFyndah({
+    return sendEmail({
         receiverEmail: email,
         subject: subject,
         emailTemplate: html,
-        replyto: replyto
+        replyto: replyto,
+        host: process.env.FYNDAH_MAILER_SMPT_HOST.toString(),
+        port: Number(process.env.FYNDAH_MAILER_SMPT_EMAIL_SSL_PORT),
+        pass: process.env.FYNDAH_MAILER_SMPT_PASSWORD.toString(),
+        user: process.env.FYNDAH_MAILER_SMPT_USER.toString(),
+        from: process.env.FYNDAH_MAILER_SMPT_FROM.toString()
     });
 });
 exports.sendEmailForFyndah = sendEmailForFyndah;
 const sendEmailForFyndahNewsLetter = (req) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, subject, html, replyto } = req.body;
-    return sendSingleEmailForFyndahNewsletter({
+    return sendEmail({
         receiverEmail: email,
         subject: subject,
         emailTemplate: html,
-        replyto: replyto
+        replyto: replyto,
+        host: process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_HOST.toString(),
+        port: Number(process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_EMAIL_SSL_PORT),
+        pass: process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_PASSWORD.toString(),
+        user: process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_USER.toString(),
+        from: process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_FROM.toString()
     });
 });
 exports.sendEmailForFyndahNewsLetter = sendEmailForFyndahNewsLetter;
+const sendEmailForCrackMailer = (req) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, subject, html, replyto } = req.body;
+    return sendEmail({
+        receiverEmail: email,
+        subject: subject,
+        emailTemplate: html,
+        replyto: replyto,
+        host: process.env.CRACK_MAILER_SMPT_HOST.toString(),
+        port: Number(process.env.CRACK_MAILER_SMPT_EMAIL_SSL_PORT),
+        pass: process.env.CRACK_MAILER_SMPT_PASSWORD.toString(),
+        user: process.env.CRACK_MAILER_SMPT_USER.toString(),
+        from: process.env.CRACK_MAILER_SMPT_FROM.toString()
+    });
+});
+exports.sendEmailForCrackMailer = sendEmailForCrackMailer;
+// const sendSingleEmailForFyndahNewsletter = async (input: ISendEmail) => {
+//   const { receiverEmail, subject, emailTemplate, replyto } = input;
+//   const TransportMailService = async (transporter: any, mailOptions: any) => {
+//     return new Promise((resolve, reject) => {
+//       transporter.sendMail(mailOptions, function (error: any, info: any) {
+//         if (error) {
+//           reject(false);
+//         } else {
+//           resolve(info.response);
+//         }
+//       });
+//     });
+//   };
+//   const transporter = nodemailer.createTransport({
+//     host: process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_HOST,
+//     port: Number(process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_EMAIL_SSL_PORT),
+//     secure: true,
+//     auth: {
+//       user:  process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_USER,
+//       pass:  process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_PASSWORD,
+//     },
+//   });
+//   const mailOptions = {
+//     from: `New Promotion <${process.env.FYNDAH_MAILER_NEWSLETTER_SMPT_FROM}>`,
+//     to: receiverEmail,
+//     subject,
+//     html: emailTemplate,
+//     replyTo: replyto
+//   };
+//   await TransportMailService(transporter, mailOptions);
+// };
+// const sendSingleEmailForCrackMailer = async (input: ISendEmail) => {
+//   const { receiverEmail, subject, emailTemplate, replyto } = input;
+//   const TransportMailService = async (transporter: any, mailOptions: any) => {
+//     return new Promise((resolve, reject) => {
+//       transporter.sendMail(mailOptions, function (error: any, info: any) {
+//         if (error) {
+//           reject(false);
+//         } else {
+//           resolve(info.response);
+//         }
+//       });
+//     });
+//   };
+//   const transporter = nodemailer.createTransport({
+//     host: process.env.CRACK_MAILER_SMPT_HOST,
+//     port: Number(process.env.CRACK_MAILER_SMPT_EMAIL_SSL_PORT),
+//     secure: true,
+//     auth: {
+//       user:  process.env.CRACK_MAILER_SMPT_USER,
+//       pass:  process.env.CRACK_MAILER_SMPT_PASSWORD,
+//     },
+//   });
+//   const mailOptions = {
+//     from: `<${process.env.CRACK_MAILER_SMPT_FROM}>`,
+//     to: receiverEmail,
+//     subject,
+//     html: emailTemplate,
+//     replyTo: replyto
+//   };
+//   await TransportMailService(transporter, mailOptions);
+// };
 // sgMail.setApiKey(process.env.SENDGRID_API_KEY!.toString())
 // const msg = {
 //   to: receiverEmail, // Change to your recipient

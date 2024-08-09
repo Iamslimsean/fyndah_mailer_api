@@ -56,6 +56,9 @@ class EmailController {
                 else if (user.site_id === enum_1.SitesId.FyndahMailerNewsletter) {
                     yield (0, email_1.sendEmailForFyndahNewsLetter)(req);
                 }
+                else if (user.site_id === enum_1.SitesId.CrackMailer) {
+                    yield (0, email_1.sendEmailForCrackMailer)(req);
+                }
                 else {
                     return res.status(400).json({
                         message: enum_1.MessageResponse.Error,
