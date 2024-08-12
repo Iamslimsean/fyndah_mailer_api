@@ -11,6 +11,8 @@ const logging_1 = __importDefault(require("./src/utils/logging"));
 const enum_1 = require("./src/utils/enum");
 const router_1 = require("./src/email/router");
 const router_2 = require("./src/auth/router");
+const router_3 = require("./src/subscriptionPlans/router");
+const router_4 = require("./src/payment/router");
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 const port = process.env.PORT || 8080;
@@ -27,16 +29,17 @@ const StartServer = () => {
     app.use(express_1.default.urlencoded({ extended: true }));
     // Cors
     app.use((0, cors_1.default)({
-        origin: [
-            "https://fyndahmailerauth.vercel.app",
-            "https://fyndah-mailer-newsletter.vercel.app",
-            "https://crack-mailer.vercel.app",
-        ],
+        origin: "*",
+        //  [
+        //   "https://fyndahmailerauth.vercel.app",
+        //   "https://fyndah-mailer-newsletter.vercel.app",
+        //   "https://crack-mailer.vercel.app",
+        // ],
         credentials: true,
         methods: ["POST"],
     }));
     // Routes
-    app.use("/api/v1", router_1.EmailRouter, router_2.AuthRouter);
+    app.use("/api/v1", router_1.EmailRouter, router_2.AuthRouter, router_3.SubscriptionPlanRouter, router_4.PaymentRouter);
     // Health check
     app.get("/api/v1/healthcheck", (_req, res) => {
         res.status(200).json({ status: "UP 🔥🔧🎂" });

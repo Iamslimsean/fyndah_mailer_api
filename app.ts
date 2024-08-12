@@ -7,6 +7,8 @@ import Logging from "./src/utils/logging";
 import { MessageResponse } from "./src/utils/enum";
 import { EmailRouter } from "./src/email/router";
 import { AuthRouter } from "./src/auth/router";
+import { SubscriptionPlanRouter } from "./src/subscriptionPlans/router";
+import { PaymentRouter } from "./src/payment/router";
 
 const app: Express = express();
 
@@ -37,18 +39,19 @@ const StartServer = () => {
   // Cors
   app.use(
     cors({
-      origin: [
-        "https://fyndahmailerauth.vercel.app",
-        "https://fyndah-mailer-newsletter.vercel.app",
-        "https://crack-mailer.vercel.app",
-      ],
+      origin: "*",
+      //  [
+      //   "https://fyndahmailerauth.vercel.app",
+      //   "https://fyndah-mailer-newsletter.vercel.app",
+      //   "https://crack-mailer.vercel.app",
+      // ],
       credentials: true,
       methods: ["POST"],
     })
   );
 
   // Routes
-  app.use("/api/v1", EmailRouter, AuthRouter);
+  app.use("/api/v1", EmailRouter, AuthRouter, SubscriptionPlanRouter, PaymentRouter);
 
   // Health check
   app.get("/api/v1/healthcheck", (_req: Request, res: Response) => {

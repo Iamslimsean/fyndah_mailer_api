@@ -8,13 +8,13 @@ export const AuthRouter = Router();
 
 AuthRouter.post(
   "/auth/signin",
-  [authValidator.auth],
+  [authValidator.signIn],
   wrapAsync(authController.sign_in)
 );
 
 AuthRouter.post(
   "/auth/signup",
   [authValidator.auth],
-  wrapAsync(authController.admin_sign_up)
+  wrapAsync(authController.signUp)
 );
 

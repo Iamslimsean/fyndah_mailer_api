@@ -12,21 +12,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authService = void 0;
-const entity_1 = __importDefault(require("../user/entity"));
-class AuthService {
-    createUser(req) {
+exports.subscriptionPlanService = void 0;
+const entity_1 = __importDefault(require("./entity"));
+class SubscriptionPlanService {
+    createSubscriptionPlan(amount, name, type, dailyLimit, monthlyLimit) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { userName, password, site_id, email } = req.body;
-            const user = new entity_1.default({
-                userName,
-                password,
-                site_id,
-                email
+            const subscription = new entity_1.default({
+                amount,
+                name,
+                type,
+                dailyLimit,
+                monthlyLimit,
             });
-            const userData = yield user.save();
-            return userData;
+            yield subscription.save();
+            return subscription;
+        });
+    }
+    findSubscriptionById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const subscription = yield entity_1.default.findById(id);
+            return subscription;
         });
     }
 }
-exports.authService = new AuthService();
+exports.subscriptionPlanService = new SubscriptionPlanService();

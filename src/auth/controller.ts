@@ -7,11 +7,34 @@ import { MessageResponse } from "../utils/enum";
 
 import { authService } from "./service";
 import { userService } from "../user/service";
+import { IUser } from "../user/inteface";
 
 dotenv.config();
 
 class AuthController {
-  public async admin_sign_up(req: Request, res: Response) {
+  public async signUp(req: Request, res: Response) {
+    const body: IUser = req.body;
+
+    const emailExist = await userService.findUserByEmail(body.email);
+
+    if (emailExist) {
+      return res.status(404).json({
+        message: MessageResponse.Error,
+        description: "Email is taken!",
+        data: null,
+      });
+    }
+
+    const userNameExist = await userService.findUserName(body.userName);
+
+    if (userNameExist) {
+      return res.status(404).json({
+        message: MessageResponse.Error,
+        description: "Username is taken!",
+        data: null,
+      });
+    }
+
     const user = await authService.createUser(req);
 
     return res.status(201).json({
@@ -22,7 +45,6 @@ class AuthController {
   }
 
   public async sign_in(req: Request, res: Response) {
-
     const user_exists = await userService.findByUserNameAndSiteName(req);
 
     if (!user_exists) {
@@ -59,7 +81,6 @@ class AuthController {
       },
     });
   }
-
 }
 
 export const authController = new AuthController();

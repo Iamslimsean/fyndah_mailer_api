@@ -13,6 +13,7 @@ exports.emailController = void 0;
 const enum_1 = require("../utils/enum");
 const email_1 = require("../utils/email");
 const service_1 = require("../user/service");
+const service_2 = require("../subscriptionPlans/service");
 class EmailController {
     sendEmail(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -25,6 +26,116 @@ class EmailController {
             });
         });
     }
+    sendEmailWithCrackMailer(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { user_id } = req;
+            const { email } = req.body;
+            console.log(user_id);
+            let user = yield service_1.userService.findUserById(user_id);
+            if (!user) {
+                return res.status(404).json({
+                    message: enum_1.MessageResponse.Error,
+                    description: `User not found!`,
+                    data: null,
+                });
+            }
+            if (user.freeEmailSendingForNewUsers !== 0) {
+                user.freeEmailSendingForNewUsers -= 1;
+                yield user.save();
+                // await sendEmailForCrackMailer(req);
+                return res.status(200).json({
+                    message: enum_1.MessageResponse.Success,
+                    description: `Email sent to ==> ${email}`,
+                    data: null,
+                });
+            }
+            if (user.subscribed === false) {
+                return res.status(400).json({
+                    message: enum_1.MessageResponse.Error,
+                    description: "Please upgrade to continue sending email.",
+                    data: null,
+                });
+            }
+            if (user.expired === true) {
+                return res.status(400).json({
+                    message: enum_1.MessageResponse.Error,
+                    description: "Your subscription has expired.",
+                    data: null,
+                });
+            }
+            const retrivedSubscription = yield service_2.subscriptionPlanService.findSubscriptionById(user.subscriptionPlanId);
+            if (!retrivedSubscription) {
+                return res.status(404).json({
+                    message: enum_1.MessageResponse.Error,
+                    description: "This subscription plan does not exits or deleted",
+                    data: null,
+                });
+            }
+            const now = new Date();
+            const subscriptionExpiryDate = new Date(user.subscriptionExpiryDate);
+            if (subscriptionExpiryDate < now) {
+                user.expired = true;
+                yield user.save();
+                return res.status(400).json({
+                    message: enum_1.MessageResponse.Error,
+                    description: "Your subscription has expired.",
+                    data: null,
+                });
+            }
+            if (user.totalEmailsSent > retrivedSubscription.monthlyLimit) {
+                user.expired = true;
+                yield user.save();
+                return res.status(400).json({
+                    message: enum_1.MessageResponse.Error,
+                    description: "Your have hit your monthly limit, please subscribe.",
+                    data: null,
+                });
+            }
+            const lastEmailSentDate = new Date(user.lastEmailSentDate);
+            if (now.getDate() === lastEmailSentDate.getDate()) {
+                if (user.dailyEmailsSent > retrivedSubscription.dailyLimit) {
+                    return res.status(429).json({
+                        message: enum_1.MessageResponse.Error,
+                        description: "Daily email limit exceeded. Please try again tomorrow.",
+                        data: null,
+                    });
+                }
+                else {
+                    user.dailyEmailsSent += 1;
+                }
+            }
+            else {
+                // Reset daily email count if a new day
+                user.dailyEmailsSent = 1;
+                user.lastEmailSentDate = now;
+            }
+            user.totalEmailsSent += 1;
+            yield user.save();
+            // await sendEmailForCrackMailer(req);
+            return res.status(200).json({
+                message: enum_1.MessageResponse.Success,
+                description: `Email sent to ==> ${email}`,
+                data: null,
+            });
+        });
+    }
+    //   if (now.getDate() === lastEmailSentDate.getDate() && user.dailyEmailsSent < retrivedSubscription.dailyLimit) {
+    //     user.dailyEmailsSent += 1;
+    //     user.totalEmailsSent += 1;
+    //     user.lastEmailSentDate = currentDate;
+    //     await user.save();
+    //   // await sendEmailForCrackMailer(req);
+    //   } else {
+    //     user.lastEmailSentDate = currentDate;
+    //     user.dailyEmailsSent = 0;
+    //     await user.save();
+    //   }
+    //   return res.status(200).json({
+    //     message: MessageResponse.Success,
+    //     description: `Email sent to ==> ${email}`,
+    //     data: null,
+    //   });
+    // }
     sendAuthEmail(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { user_id } = req;
@@ -41,15 +152,16 @@ class EmailController {
             const lastEmailSentDate = new Date(user.lastEmailSentDate);
             // console.log(currentDate, lastEmailSentDate);
             if (lastEmailSentDate < currentDate) {
-                user.totalNumberOfEmailSentToday += 1;
+                if (user.dailyEmailsSent < 5000) {
+                    user.dailyEmailsSent += 1;
+                }
             }
             else {
                 user.lastEmailSentDate = new Date();
-                user.totalNumberOfEmailSentToday = 0;
+                user.dailyEmailsSent = 0;
             }
             yield user.save();
-            if (lastEmailSentDate < currentDate &&
-                user.totalNumberOfEmailSentToday < 5000) {
+            if (lastEmailSentDate < currentDate && user.dailyEmailsSent < 5000) {
                 if (user.site_id === enum_1.SitesId.FyndahMailer) {
                     yield (0, email_1.sendEmailForFyndah)(req);
                 }

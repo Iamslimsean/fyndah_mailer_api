@@ -25,6 +25,18 @@ class UserService {
             return user;
         });
     }
+    findUserByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield entity_1.default.findOne({ email });
+            return user;
+        });
+    }
+    findUserName(userName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield entity_1.default.findOne({ userName });
+            return user;
+        });
+    }
     checkUserPassword(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const { password } = req.body;
@@ -46,6 +58,33 @@ class UserService {
             const user = yield entity_1.default.findOne({
                 userName: userName,
             });
+            return user;
+        });
+    }
+    findUserBySubscriptionTxRef(subscriptionTxRef) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield entity_1.default.findOne({ subscriptionTxRef });
+            return user;
+        });
+    }
+    purchaseSubscriptionPlan(subscriptionTxRef) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // const pricingId = new mongoose.Types.ObjectId(subscriptionPlanId);
+            // const subscription = await subscriptionPlanService.findSubscriptionById(
+            //   pricingId
+            // );
+            let user = yield exports.userService.findUserBySubscriptionTxRef(subscriptionTxRef);
+            if (!user) {
+                return;
+            }
+            let currentDate = new Date();
+            let oneMonthExpiryDate = new Date(currentDate);
+            oneMonthExpiryDate.setDate(currentDate.getDate() + 30);
+            user.subscribed = true;
+            user.expired = false;
+            user.subscriptionExpiryDate = oneMonthExpiryDate;
+            user.lastEmailSentDate = currentDate;
+            user = yield user.save();
             return user;
         });
     }

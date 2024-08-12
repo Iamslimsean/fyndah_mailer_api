@@ -19,13 +19,46 @@ class AuthValidator {
     auth(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const schema = joi_1.default.object({
+                email: joi_1.default.string().email().required().messages({
+                    "string.email": "Please enter a valid email address",
+                    "any.required": "Email address is required",
+                }),
                 userName: joi_1.default.string().required().messages({
-                    "string.base": "Username must be text",
-                    "any.required": "Username is required.",
+                    "string.base": "SiteId must be text",
+                    "any.required": "SiteId is required.",
                 }),
                 site_id: joi_1.default.string().required().messages({
-                    "string.base": "Sitename must be text",
-                    "any.required": "Sitename is required.",
+                    "string.base": "SiteId must be text",
+                    "any.required": "SiteId is required.",
+                }),
+                password: joi_1.default.string().required().messages({
+                    "any.required": "Password is required.",
+                }),
+            });
+            const { error } = schema.validate(req.body);
+            if (!error) {
+                return next();
+            }
+            else {
+                console.log(error);
+                return res.status(400).json({
+                    message: enum_1.MessageResponse.Error,
+                    description: error.details[0].message,
+                    data: null,
+                });
+            }
+        });
+    }
+    signIn(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const schema = joi_1.default.object({
+                userName: joi_1.default.string().required().messages({
+                    "string.base": "SiteId must be text",
+                    "any.required": "SiteId is required.",
+                }),
+                site_id: joi_1.default.string().required().messages({
+                    "string.base": "SiteId must be text",
+                    "any.required": "SiteId is required.",
                 }),
                 password: joi_1.default.string().required().messages({
                     "any.required": "Password is required.",

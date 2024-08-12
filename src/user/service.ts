@@ -15,6 +15,20 @@ class UserService {
     return user;
   }
 
+  public async findUserByEmail(email: string) {
+
+  const user = await User.findOne({email});
+
+  return user;
+  }
+
+  public async findUserName(userName: string) {
+
+    const user = await User.findOne({userName});
+  
+    return user;
+    }
+
 
   public async checkUserPassword(req: Request) {
     const { password } = req.body;
@@ -38,6 +52,41 @@ class UserService {
     const user = await User.findOne({
       userName: userName,
     });
+
+    return user;
+  }
+
+  public async findUserBySubscriptionTxRef(subscriptionTxRef: string) {
+    const user = await User.findOne({subscriptionTxRef});
+
+    return user;
+  }
+
+
+  public async purchaseSubscriptionPlan(
+    subscriptionTxRef: string
+  ) {
+    // const pricingId = new mongoose.Types.ObjectId(subscriptionPlanId);
+    // const subscription = await subscriptionPlanService.findSubscriptionById(
+    //   pricingId
+    // );
+
+    let user = await userService.findUserBySubscriptionTxRef(subscriptionTxRef);
+
+    if (!user) {
+      return;
+    }
+
+    let currentDate = new Date();
+    let oneMonthExpiryDate = new Date(currentDate);
+    oneMonthExpiryDate.setDate(currentDate.getDate() + 30);
+
+    user.subscribed = true;
+    user.expired = false;
+    user.subscriptionExpiryDate = oneMonthExpiryDate;
+    user.lastEmailSentDate = currentDate;
+
+    user = await user.save();
 
     return user;
   }

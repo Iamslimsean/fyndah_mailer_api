@@ -19,3 +19,9 @@ EmailRouter.post(
   wrapAsync(emailController.sendAuthEmail)
 );
 
+EmailRouter.post(
+  "/send/with/crack/mailer",
+  [isAuth, sendEmailValidator.sendEmail],
+  wrapAsync(emailController.sendEmailWithCrackMailer)
+);
+

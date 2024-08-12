@@ -4,13 +4,14 @@ import User from "../user/entity";
 
 class AuthService {
   public async createUser(req: Request) {
-    const { userName, password, site_id } = req.body;
+    const { userName, password, site_id, email } = req.body;
 
 
     const user = new User({
       userName,
       password,
-      site_id
+      site_id,
+      email
     });
 
     const userData = await user.save();

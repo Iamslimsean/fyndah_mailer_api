@@ -20,8 +20,25 @@ const service_1 = require("./service");
 const service_2 = require("../user/service");
 dotenv_1.default.config();
 class AuthController {
-    admin_sign_up(req, res) {
+    signUp(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const body = req.body;
+            const emailExist = yield service_2.userService.findUserByEmail(body.email);
+            if (emailExist) {
+                return res.status(404).json({
+                    message: enum_1.MessageResponse.Error,
+                    description: "Email is taken!",
+                    data: null,
+                });
+            }
+            const userNameExist = yield service_2.userService.findUserName(body.userName);
+            if (userNameExist) {
+                return res.status(404).json({
+                    message: enum_1.MessageResponse.Error,
+                    description: "Username is taken!",
+                    data: null,
+                });
+            }
             const user = yield service_1.authService.createUser(req);
             return res.status(201).json({
                 message: enum_1.MessageResponse.Success,

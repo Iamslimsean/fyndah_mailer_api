@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PaymentRouter = void 0;
+const express_1 = require("express");
+const utils_1 = require("../utils");
+const is_auth_1 = require("../middleware/is_auth");
+const validator_1 = require("./validator");
+const controller_1 = require("./controller");
+exports.PaymentRouter = (0, express_1.Router)();
+exports.PaymentRouter.post("/pay/:subPlanId", [is_auth_1.isAuth, validator_1.paymentValidator.pay], (0, utils_1.wrapAsync)(controller_1.paymentController.payment));
+exports.PaymentRouter.post("/verify/payment/:transactionId", [validator_1.paymentValidator.verifyPayment], (0, utils_1.wrapAsync)(controller_1.paymentController.verifyPayment));
