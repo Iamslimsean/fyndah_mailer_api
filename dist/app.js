@@ -29,12 +29,11 @@ const StartServer = () => {
     app.use(express_1.default.urlencoded({ extended: true }));
     // Cors
     app.use((0, cors_1.default)({
-        origin: "*",
-        //  [
-        //   "https://fyndahmailerauth.vercel.app",
-        //   "https://fyndah-mailer-newsletter.vercel.app",
-        //   "https://crack-mailer.vercel.app",
-        // ],
+        origin: [
+            "https://fyndahmailerauth.vercel.app",
+            "https://fyndah-mailer-newsletter.vercel.app",
+            "https://crack-mailer.vercel.app",
+        ],
         credentials: true,
         methods: ["POST"],
     }));
