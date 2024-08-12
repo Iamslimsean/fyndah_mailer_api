@@ -18,7 +18,7 @@ dotenv_1.default.config();
 class FlutterwaveService {
     constructor() {
         this.secretKey = process.env.FLUTTERWAVE_SECRET_KEY;
-        this.baseUrl = 'https://api.flutterwave.com/v3';
+        this.baseUrl = "https://api.flutterwave.com/v3";
     }
     initiatePayment(data) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -26,31 +26,25 @@ class FlutterwaveService {
                 const response = yield axios_1.default.post(`${this.baseUrl}/payments`, data, {
                     headers: {
                         Authorization: `Bearer ${this.secretKey}`,
-                        'Content-Type': 'application/json',
+                        "Content-Type": "application/json",
                     },
                 });
                 return response;
             }
             catch (error) {
-                console.error('Error initiating payment:', error);
+                console.error("Error initiating payment:", error);
                 throw error;
             }
         });
     }
     verifyPayment(transactionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const response = yield axios_1.default.get(`${this.baseUrl}/transactions/${transactionId}/verify`, {
-                    headers: {
-                        Authorization: `Bearer ${this.secretKey}`,
-                    },
-                });
-                return response.data;
-            }
-            catch (error) {
-                console.error('Error verifying payment:', error);
-                throw error;
-            }
+            const response = yield axios_1.default.get(`${this.baseUrl}/transactions/${transactionId}/verify`, {
+                headers: {
+                    Authorization: `Bearer ${this.secretKey}`,
+                },
+            });
+            return response.data;
         });
     }
 }
