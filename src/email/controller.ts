@@ -45,12 +45,12 @@ class EmailController {
 
       await user.save();
 
-      // await sendEmailForCrackMailer(req);
+      await sendEmailForCrackMailer(req);
 
       return res.status(200).json({
         message: MessageResponse.Success,
         description: `Email sent to ==> ${email}`,
-        data: null,
+        data: {userData: user},
       });
     }
 
@@ -137,12 +137,12 @@ class EmailController {
     user.totalEmailsSent += 1;
     await user.save();
 
-    // await sendEmailForCrackMailer(req);
+    await sendEmailForCrackMailer(req);
 
     return res.status(200).json({
       message: MessageResponse.Success,
       description: `Email sent to ==> ${email}`,
-      data: null,
+      data: {userData: user, retrivedSubscription: retrivedSubscription},
     });
   }
 

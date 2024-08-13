@@ -42,11 +42,11 @@ class EmailController {
             if (user.freeEmailSendingForNewUsers !== 0) {
                 user.freeEmailSendingForNewUsers -= 1;
                 yield user.save();
-                // await sendEmailForCrackMailer(req);
+                yield (0, email_1.sendEmailForCrackMailer)(req);
                 return res.status(200).json({
                     message: enum_1.MessageResponse.Success,
                     description: `Email sent to ==> ${email}`,
-                    data: null,
+                    data: { userData: user },
                 });
             }
             if (user.subscribed === false) {
@@ -114,11 +114,11 @@ class EmailController {
             }
             user.totalEmailsSent += 1;
             yield user.save();
-            // await sendEmailForCrackMailer(req);
+            yield (0, email_1.sendEmailForCrackMailer)(req);
             return res.status(200).json({
                 message: enum_1.MessageResponse.Success,
                 description: `Email sent to ==> ${email}`,
-                data: null,
+                data: { userData: user, retrivedSubscription: retrivedSubscription },
             });
         });
     }

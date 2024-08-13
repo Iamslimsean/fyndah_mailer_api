@@ -73,6 +73,7 @@ class AuthController {
                 description: "Logged in successfully",
                 data: {
                     token,
+                    userData: user_exists
                 },
             });
         });

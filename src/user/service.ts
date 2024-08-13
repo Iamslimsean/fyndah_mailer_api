@@ -10,7 +10,7 @@ class UserService {
     const user = await User.findOne({
       userName: userName,
       site_id: site_id
-    });
+    }).select("-password");
 
     return user;
   }
@@ -41,7 +41,7 @@ class UserService {
   }
 
   public async findUserById(user_id: string) {
-    const user = await User.findById(user_id);
+    const user = await User.findById(user_id).select("-password");
 
     return user;
   }

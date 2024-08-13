@@ -21,7 +21,7 @@ class UserService {
             const user = yield entity_1.default.findOne({
                 userName: userName,
                 site_id: site_id
-            });
+            }).select("-password");
             return user;
         });
     }
@@ -48,7 +48,7 @@ class UserService {
     }
     findUserById(user_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield entity_1.default.findById(user_id);
+            const user = yield entity_1.default.findById(user_id).select("-password");
             return user;
         });
     }
