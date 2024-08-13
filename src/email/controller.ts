@@ -28,7 +28,7 @@ class EmailController {
     const { user_id } = req as CustomRequest;
     const { email } = req.body;
 
-    console.log(user_id)
+    console.log(user_id);
 
     let user = await userService.findUserById(user_id);
 
@@ -70,9 +70,10 @@ class EmailController {
       });
     }
 
-    const retrivedSubscription = await subscriptionPlanService.findSubscriptionById(
-      user.subscriptionPlanId as mongoose.Types.ObjectId
-    );
+    const retrivedSubscription =
+      await subscriptionPlanService.findSubscriptionById(
+        user.subscriptionPlanId as mongoose.Types.ObjectId
+      );
 
     if (!retrivedSubscription) {
       return res.status(404).json({
@@ -84,7 +85,9 @@ class EmailController {
 
     const now = new Date();
 
-    const subscriptionExpiryDate = new Date(user.subscriptionExpiryDate as Date);
+    const subscriptionExpiryDate = new Date(
+      user.subscriptionExpiryDate as Date
+    );
 
     if (subscriptionExpiryDate < now) {
       user.expired = true;
@@ -98,7 +101,7 @@ class EmailController {
       });
     }
 
-    if(user.totalEmailsSent > retrivedSubscription.monthlyLimit) {
+    if (user.totalEmailsSent > retrivedSubscription.monthlyLimit) {
       user.expired = true;
       await user.save();
 
@@ -109,22 +112,26 @@ class EmailController {
       });
     }
 
-    const lastEmailSentDate = new Date(user.lastEmailSentDate as Date);
+    //We check if it has no daily limit
+    if (retrivedSubscription.dailyLimit !== 0) {
+      const lastEmailSentDate = new Date(user.lastEmailSentDate as Date);
 
-    if (now.getDate() === lastEmailSentDate.getDate()) {
-      if (user.dailyEmailsSent > retrivedSubscription.dailyLimit) {
-        return res.status(429).json({
-          message: MessageResponse.Error,
-          description: "Daily email limit exceeded. Please try again tomorrow.",
-          data: null,
-        });
+      if (now.getDate() === lastEmailSentDate.getDate()) {
+        if (user.dailyEmailsSent > retrivedSubscription.dailyLimit) {
+          return res.status(429).json({
+            message: MessageResponse.Error,
+            description:
+              "Daily email limit exceeded. Please try again tomorrow.",
+            data: null,
+          });
+        } else {
+          user.dailyEmailsSent += 1;
+        }
       } else {
-        user.dailyEmailsSent += 1;
+        // Reset daily email count if a new day
+        user.dailyEmailsSent = 1;
+        user.lastEmailSentDate = now;
       }
-    } else {
-      // Reset daily email count if a new day
-      user.dailyEmailsSent = 1;
-      user.lastEmailSentDate = now;
     }
 
     user.totalEmailsSent += 1;
@@ -137,7 +144,7 @@ class EmailController {
       description: `Email sent to ==> ${email}`,
       data: null,
     });
-}
+  }
 
   //   if (now.getDate() === lastEmailSentDate.getDate() && user.dailyEmailsSent < retrivedSubscription.dailyLimit) {
   //     user.dailyEmailsSent += 1;
@@ -150,10 +157,6 @@ class EmailController {
   //     user.dailyEmailsSent = 0;
   //     await user.save();
   //   }
-
-    
-
-    
 
   //   return res.status(200).json({
   //     message: MessageResponse.Success,

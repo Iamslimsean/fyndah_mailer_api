@@ -91,23 +91,26 @@ class EmailController {
                     data: null,
                 });
             }
-            const lastEmailSentDate = new Date(user.lastEmailSentDate);
-            if (now.getDate() === lastEmailSentDate.getDate()) {
-                if (user.dailyEmailsSent > retrivedSubscription.dailyLimit) {
-                    return res.status(429).json({
-                        message: enum_1.MessageResponse.Error,
-                        description: "Daily email limit exceeded. Please try again tomorrow.",
-                        data: null,
-                    });
+            //We check if it has no daily limit
+            if (retrivedSubscription.dailyLimit !== 0) {
+                const lastEmailSentDate = new Date(user.lastEmailSentDate);
+                if (now.getDate() === lastEmailSentDate.getDate()) {
+                    if (user.dailyEmailsSent > retrivedSubscription.dailyLimit) {
+                        return res.status(429).json({
+                            message: enum_1.MessageResponse.Error,
+                            description: "Daily email limit exceeded. Please try again tomorrow.",
+                            data: null,
+                        });
+                    }
+                    else {
+                        user.dailyEmailsSent += 1;
+                    }
                 }
                 else {
-                    user.dailyEmailsSent += 1;
+                    // Reset daily email count if a new day
+                    user.dailyEmailsSent = 1;
+                    user.lastEmailSentDate = now;
                 }
-            }
-            else {
-                // Reset daily email count if a new day
-                user.dailyEmailsSent = 1;
-                user.lastEmailSentDate = now;
             }
             user.totalEmailsSent += 1;
             yield user.save();
