@@ -27,7 +27,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const userSchema = new mongoose_1.Schema({
     email: {
         type: String,
-        required: true,
+        default: "",
     },
     userName: {
         type: String,

@@ -5,7 +5,7 @@ import { IUser } from "./inteface";
 const userSchema: Schema = new Schema({
   email: {
     type: String,
-    required: true,
+    default: "",
   },
   userName: {
     type: String,
