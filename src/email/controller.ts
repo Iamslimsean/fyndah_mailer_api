@@ -193,7 +193,7 @@ class EmailController {
     // }
 
     if (currentDate.getDate() === lastEmailSentDate.getDate()) {
-      if (user.dailyEmailsSent > 5000) {
+      if (user.dailyEmailsSent > 50000) {
         return res.status(429).json({
           message: MessageResponse.Error,
           description: "Daily email limit exceeded. Please try again tomorrow.",
