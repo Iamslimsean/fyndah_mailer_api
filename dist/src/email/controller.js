@@ -163,7 +163,8 @@ class EmailController {
             //   user.dailyEmailsSent = 0;
             // }
             if (currentDate.getDate() === lastEmailSentDate.getDate()) {
-                if (user.dailyEmailsSent > 50000) {
+                const dailyLimit = user.site_id === enum_1.SitesId.FyndahMailer ? 5000 : 10000;
+                if (user.dailyEmailsSent > dailyLimit) {
                     return res.status(429).json({
                         message: enum_1.MessageResponse.Error,
                         description: "Daily email limit exceeded. Please try again tomorrow.",
@@ -181,29 +182,32 @@ class EmailController {
             }
             user.totalEmailsSent += 1;
             yield user.save();
-            // if (lastEmailSentDate < currentDate && user.dailyEmailsSent < 5000) {
-            if (user.site_id === enum_1.SitesId.FyndahMailer) {
-                yield (0, email_1.sendEmailForFyndah)(req);
-            }
-            else if (user.site_id === enum_1.SitesId.FyndahMailerNewsletter) {
-                yield (0, email_1.sendEmailForFyndahNewsLetter)(req);
-            }
-            else if (user.site_id === enum_1.SitesId.CrackMailer) {
-                yield (0, email_1.sendEmailForCrackMailer)(req);
-            }
-            else {
-                return res.status(400).json({
-                    message: enum_1.MessageResponse.Error,
-                    description: `Invalid website`,
-                    data: null,
+            if (lastEmailSentDate < currentDate && user.dailyEmailsSent < 5000) {
+                if (user.site_id === enum_1.SitesId.FyndahMailer) {
+                    yield (0, email_1.sendEmailForFyndah)(req);
+                }
+                else if (user.site_id === enum_1.SitesId.FyndahMailerNewsletter) {
+                    yield (0, email_1.sendEmailForFyndahNewsLetter)(req);
+                }
+                else if (user.site_id === enum_1.SitesId.CrackMailer) {
+                    yield (0, email_1.sendEmailForCrackMailer)(req);
+                }
+                else if (user.site_id === enum_1.SitesId.Toolzbox) {
+                    yield (0, email_1.sendEmailForFyndah)(req);
+                }
+                else {
+                    return res.status(400).json({
+                        message: enum_1.MessageResponse.Error,
+                        description: `Invalid website`,
+                        data: null,
+                    });
+                }
+                return res.status(200).json({
+                    message: enum_1.MessageResponse.Success,
+                    description: `Email sent to ==> ${email}`,
+                    data: { userData: user }
                 });
             }
-            return res.status(200).json({
-                message: enum_1.MessageResponse.Success,
-                description: `Email sent to ==> ${email}`,
-                data: null,
-            });
-            // }
             // return res.status(400).json({
             //   message: MessageResponse.Error,
             //   description: `Daily Limit Exceeded!`,

@@ -11,4 +11,5 @@ var SitesId;
     SitesId["FyndahMailer"] = "fyndah-mailer";
     SitesId["FyndahMailerNewsletter"] = "fyndah-mailer-newsletter";
     SitesId["CrackMailer"] = "crack-mailer";
+    SitesId["Toolzbox"] = "toolz-box";
 })(SitesId || (exports.SitesId = SitesId = {}));

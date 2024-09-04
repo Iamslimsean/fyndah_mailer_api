@@ -6,6 +6,7 @@ export enum MessageResponse {
   export enum SitesId {
     FyndahMailer = "fyndah-mailer",
     FyndahMailerNewsletter = "fyndah-mailer-newsletter",
-    CrackMailer = "crack-mailer"
+    CrackMailer = "crack-mailer",
+    Toolzbox = "toolz-box"
   }
   

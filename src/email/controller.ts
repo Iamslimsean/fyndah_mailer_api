@@ -193,7 +193,8 @@ class EmailController {
     // }
 
     if (currentDate.getDate() === lastEmailSentDate.getDate()) {
-      if (user.dailyEmailsSent > 50000) {
+      const dailyLimit = user.site_id === SitesId.FyndahMailer ? 5000 : 10000;
+      if (user.dailyEmailsSent > dailyLimit) {
         return res.status(429).json({
           message: MessageResponse.Error,
           description: "Daily email limit exceeded. Please try again tomorrow.",
@@ -211,14 +212,16 @@ class EmailController {
     user.totalEmailsSent += 1;
     await user.save();
 
-    // if (lastEmailSentDate < currentDate && user.dailyEmailsSent < 5000) {
+    if (lastEmailSentDate < currentDate && user.dailyEmailsSent < 5000) {
     if (user.site_id === SitesId.FyndahMailer) {
       await sendEmailForFyndah(req);
     } else if (user.site_id === SitesId.FyndahMailerNewsletter) {
       await sendEmailForFyndahNewsLetter(req);
     } else if (user.site_id === SitesId.CrackMailer) {
       await sendEmailForCrackMailer(req);
-    } else {
+    } else if (user.site_id === SitesId.Toolzbox) {
+      await sendEmailForFyndah(req);
+    }  else {
       return res.status(400).json({
         message: MessageResponse.Error,
         description: `Invalid website`,
@@ -229,9 +232,9 @@ class EmailController {
     return res.status(200).json({
       message: MessageResponse.Success,
       description: `Email sent to ==> ${email}`,
-      data: null,
+      data: { userData: user }
     });
-    // }
+     }
 
     // return res.status(400).json({
     //   message: MessageResponse.Error,
