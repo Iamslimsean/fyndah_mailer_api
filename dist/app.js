@@ -35,7 +35,8 @@ const StartServer = () => {
             "https://fyndahmailerauth.vercel.app",
             "https://fyndah-mailer-newsletter.vercel.app",
             "https://crack-mailer.vercel.app",
-            "http://127.0.0.1:5500"
+            "http://127.0.0.1:5500",
+            "https://toolzbox.vercel.app"
         ],
         credentials: true,
         methods: ["POST"],
