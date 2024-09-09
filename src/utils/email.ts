@@ -8,17 +8,53 @@ import { ISendEmail } from "./interface";
 
 dotenv.config();
 
+// const sendEmail = async (input: ISendEmail) => {
+//   const { receiverEmail, subject, emailTemplate, replyto, host, port, pass, user, from } = input;
+
+
+//   const TransportMailService = async (transporter: any, mailOptions: any) => {
+//     return new Promise((resolve, reject) => {
+//       transporter.sendMail(mailOptions, function (error: any, info: any) {
+//         if (error) {
+//           reject(false);
+//         } else {
+//           resolve(info.response);
+//         }
+//       });
+//     });
+//   };
+
+//   const transporter = nodemailer.createTransport({
+//     host: host,
+//     port: port,
+//     secure: true,
+//     auth: {
+//       user:  user,
+//       pass:  pass,
+//     },
+//   });
+
+//   const mailOptions = {
+//     from: `Promotion <${from}>`,
+//     to: receiverEmail,
+//     subject,
+//     html: emailTemplate,
+//     replyTo: replyto
+//   };
+
+//   await TransportMailService(transporter, mailOptions);
+// };
+
 const sendEmail = async (input: ISendEmail) => {
   const { receiverEmail, subject, emailTemplate, replyto, host, port, pass, user, from } = input;
-
 
   const TransportMailService = async (transporter: any, mailOptions: any) => {
     return new Promise((resolve, reject) => {
       transporter.sendMail(mailOptions, function (error: any, info: any) {
         if (error) {
-          reject(false);
+          reject(false); // Reject with false on error
         } else {
-          resolve(info.response);
+          resolve(info.response); // Resolve with the response on success
         }
       });
     });
@@ -29,8 +65,8 @@ const sendEmail = async (input: ISendEmail) => {
     port: port,
     secure: true,
     auth: {
-      user:  user,
-      pass:  pass,
+      user: user,
+      pass: pass,
     },
   });
 
@@ -39,11 +75,19 @@ const sendEmail = async (input: ISendEmail) => {
     to: receiverEmail,
     subject,
     html: emailTemplate,
-    replyTo: replyto
+    replyTo: replyto,
   };
 
-  await TransportMailService(transporter, mailOptions);
+  try {
+    await TransportMailService(transporter, mailOptions);
+  } catch (error) {
+    return;
+  }
+
+  // Any code here will only run if the email was sent successfully
+  console.log('Email sent successfully.');
 };
+
 
 
 export const sendEmailForFyndah = async (req: Request) => {

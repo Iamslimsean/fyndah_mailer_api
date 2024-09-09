@@ -16,16 +16,47 @@ exports.sendEmailForCrackMailer = exports.sendEmailForFyndahNewsLetter = exports
 const dotenv_1 = __importDefault(require("dotenv"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 dotenv_1.default.config();
+// const sendEmail = async (input: ISendEmail) => {
+//   const { receiverEmail, subject, emailTemplate, replyto, host, port, pass, user, from } = input;
+//   const TransportMailService = async (transporter: any, mailOptions: any) => {
+//     return new Promise((resolve, reject) => {
+//       transporter.sendMail(mailOptions, function (error: any, info: any) {
+//         if (error) {
+//           reject(false);
+//         } else {
+//           resolve(info.response);
+//         }
+//       });
+//     });
+//   };
+//   const transporter = nodemailer.createTransport({
+//     host: host,
+//     port: port,
+//     secure: true,
+//     auth: {
+//       user:  user,
+//       pass:  pass,
+//     },
+//   });
+//   const mailOptions = {
+//     from: `Promotion <${from}>`,
+//     to: receiverEmail,
+//     subject,
+//     html: emailTemplate,
+//     replyTo: replyto
+//   };
+//   await TransportMailService(transporter, mailOptions);
+// };
 const sendEmail = (input) => __awaiter(void 0, void 0, void 0, function* () {
     const { receiverEmail, subject, emailTemplate, replyto, host, port, pass, user, from } = input;
     const TransportMailService = (transporter, mailOptions) => __awaiter(void 0, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    reject(false);
+                    reject(false); // Reject with false on error
                 }
                 else {
-                    resolve(info.response);
+                    resolve(info.response); // Resolve with the response on success
                 }
             });
         });
@@ -44,9 +75,16 @@ const sendEmail = (input) => __awaiter(void 0, void 0, void 0, function* () {
         to: receiverEmail,
         subject,
         html: emailTemplate,
-        replyTo: replyto
+        replyTo: replyto,
     };
-    yield TransportMailService(transporter, mailOptions);
+    try {
+        yield TransportMailService(transporter, mailOptions);
+    }
+    catch (error) {
+        return;
+    }
+    // Any code here will only run if the email was sent successfully
+    console.log('Email sent successfully.');
 });
 const sendEmailForFyndah = (req) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, subject, html, replyto } = req.body;
